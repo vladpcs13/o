@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Закрыть</title>
+    <title>Закрыsssь</title>
     <style>
         html, body {
             margin: 0;
@@ -21,23 +21,34 @@
 
         h1 {
             margin: 0;
-            font-size: 15vw; /* адаптируется под ширину экрана */
+            font-size: 15vw;
             text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>НАЖМИТЕ ЧТОБЫ ЗАКРЫТЬ</h1>
+    <h1>ЗАКРЫТЬ</h1>
     <audio id="sound" src="snd.mp3" preload="auto"></audio>
 
     <script>
         const sound = document.getElementById('sound');
 
-        document.body.addEventListener('click', () => {
-            // сбрасываем и воспроизводим звук заново
-            sound.currentTime = 0;
-            sound.play();
-        });
+
+        function playSound() {
+            if (sound) {
+                sound.pause();
+                sound.currentTime = 0;
+                const playPromise = sound.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("Ошибка воспроизведения:", error);
+                    });
+                }
+            }
+        }
+
+        // Клик по всему экрану
+        document.body.addEventListener('click', playSound);
     </script>
 </body>
 </html>
