@@ -21,7 +21,7 @@
 
         h1 {
             margin: 0;
-            font-size: 15vw;
+            font-size: 15vw; /* адаптируется под ширину экрана */
             text-align: center;
         }
     </style>
@@ -32,7 +32,9 @@
 
     <script>
         const sound = document.getElementById('sound');
+
         document.body.addEventListener('click', () => {
+            // сбрасываем и воспроизводим звук заново
             sound.currentTime = 0;
             sound.play();
         });
