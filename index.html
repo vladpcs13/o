@@ -18,7 +18,7 @@
 
     <p class="percent" id="percent">0%</p>
 
-    <!-- ПУСТЫШКА -->
+    <!-- КНОПКА-ПУСТЫШКА -->
     <button>Остановить</button>
 </div>
 
@@ -35,7 +35,7 @@
     const intervalTime = 100;
     const step = 100 / (duration / intervalTime);
 
-    // музехее фейк загрузка
+    // факе прогрес
     setInterval(() => {
         if (progress >= 100) return;
 
@@ -46,14 +46,21 @@
         percentText.textContent = Math.floor(progress) + "%";
 
         if (progress > 30) statusText.textContent = "Загрузка компонентов…";
-        if (progress > 60) statusText.textContent = "Установка модулей…";
+        if (progress > 60) statusText.textContent = "Установка прослушки…";
         if (progress > 85) statusText.textContent = "Завершение установки…";
         if (progress === 100) statusText.textContent = "Установка завершена";
 
     }, intervalTime);
 
-    // сука ебучий звук
+    // фулскрин
     document.body.addEventListener("click", () => {
+
+        // Полный экран (один раз)
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
+
+        // Звук
         sound.currentTime = 0;
         sound.play().catch(() => {});
     });
