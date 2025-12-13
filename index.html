@@ -3,52 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@BannedThirdTimes</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
-            color: #fff;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 15vw;
-            text-align: center;
-        }
-    </style>
+    <title>Установка MAX</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>НАЖМИТЕ ЧТОБЫ ЗАКРЫТЬ</h1>
-    <audio id="sound" src="snd.mp3" preload="auto"></audio>
 
-    <script>
-        const sound = document.getElementById('sound');
+<div class="installer">
+    <h1>Установка мессенджера MAX</h1>
+    <p class="status" id="status">Подготовка к установке…</p>
 
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
 
-        function playSound() {
-            if (sound) {
-                sound.pause();
-                sound.currentTime = 0;
-                const playPromise = sound.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.log("Ошибка воспроизведения:", error);
-                    });
-                }
-            }
+    <p class="percent" id="percent">0%</p>
+
+    <button id="stopBtn">Остановить</button>
+</div>
+
+<audio id="sound" src="snd.mp3" preload="auto"></audio>
+
+<script>
+    const progressBar = document.getElementById("progressBar");
+    const percentText = document.getElementById("percent");
+    const statusText = document.getElementById("status");
+    const stopBtn = document.getElementById("stopBtn");
+    const sound = document.getElementById("sound");
+
+    let progress = 0;
+    const duration = 180000;
+    const intervalTime = 100;
+    const step = 100 / (duration / intervalTime);
+
+    const interval = setInterval(() => {
+        progress += step;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            statusText.textContent = "Установка завершена";
+            stopBtn.disabled = true;
         }
 
-        // Клик по всему экрану
-        document.body.addEventListener('click', playSound);
-    </script>
+        progressBar.style.width = progress + "%";
+        percentText.textContent = Math.floor(progress) + "%";
+
+        if (progress > 30) statusText.textContent = "Загрузка компонентов…";
+        if (progress > 60) statusText.textContent = "Установка модулей…";
+        if (progress > 85) statusText.textContent = "Завершение установки…";
+
+    }, intervalTime);
+
+    stopBtn.addEventListener("click", () => {
+        sound.currentTime = 0;
+        sound.play().catch(() => {});
+    });
+</script>
+
 </body>
 </html>
