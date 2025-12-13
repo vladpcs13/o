@@ -18,7 +18,8 @@
 
     <p class="percent" id="percent">0%</p>
 
-    <button id="stopBtn">Остановить</button>
+    <!-- ПУСТЫШКА -->
+    <button>Остановить</button>
 </div>
 
 <audio id="sound" src="snd.mp3" preload="auto"></audio>
@@ -27,22 +28,19 @@
     const progressBar = document.getElementById("progressBar");
     const percentText = document.getElementById("percent");
     const statusText = document.getElementById("status");
-    const stopBtn = document.getElementById("stopBtn");
     const sound = document.getElementById("sound");
 
     let progress = 0;
-    const duration = 180000;
+    const duration = 180000; // 3 минуты
     const intervalTime = 100;
     const step = 100 / (duration / intervalTime);
 
-    const interval = setInterval(() => {
+    // музехее фейк загрузка
+    setInterval(() => {
+        if (progress >= 100) return;
+
         progress += step;
-        if (progress >= 100) {
-            progress = 100;
-            clearInterval(interval);
-            statusText.textContent = "Установка завершена";
-            stopBtn.disabled = true;
-        }
+        if (progress > 100) progress = 100;
 
         progressBar.style.width = progress + "%";
         percentText.textContent = Math.floor(progress) + "%";
@@ -50,10 +48,12 @@
         if (progress > 30) statusText.textContent = "Загрузка компонентов…";
         if (progress > 60) statusText.textContent = "Установка модулей…";
         if (progress > 85) statusText.textContent = "Завершение установки…";
+        if (progress === 100) statusText.textContent = "Установка завершена";
 
     }, intervalTime);
 
-    stopBtn.addEventListener("click", () => {
+    // сука ебучий звук
+    document.body.addEventListener("click", () => {
         sound.currentTime = 0;
         sound.play().catch(() => {});
     });
