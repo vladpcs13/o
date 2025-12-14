@@ -9,6 +9,10 @@
 <body>
 
 <div class="installer">
+    <div class="logo-container">
+        <img src="max.png" alt="MAX Logo" class="logo">
+    </div>
+    
     <h1>Установка мессенджера MAX</h1>
     <p class="status" id="status">Подготовка к установке…</p>
 
@@ -18,8 +22,45 @@
 
     <p class="percent" id="percent">0%</p>
 
-    <!-- КНОПКА-ПУСТЫШКА -->
-    <button>Остановить</button>
+    <button id="stopBtn">Остановить</button>
+</div>
+
+<!-- ОКНО УСТАНОВКИ В СТИЛЕ ANDROID -->
+<div class="android-modal" id="androidModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-logo">
+                <img src="max.png" alt="MAX" class="modal-logo-img">
+            </div>
+            <div class="modal-title">
+                <h3>MAX</h3>
+                <p>Разрешить установку этого приложения?</p>
+            </div>
+        </div>
+        
+        <div class="modal-body">
+            <div class="app-info">
+                <p><strong>Это приложение может:</strong></p>
+                <ul>
+                    <li>Доступ к контактам</li>
+                    <li>Доступ к микрофону</li>
+                    <li>Доступ к файлам</li>
+                    <li>Доступ к местоположению</li>
+                    <li>Прослушивание разговоров</li>
+                </ul>
+            </div>
+            
+            <div class="warning">
+                ⚠️ Это приложение потенциально опасно для безопасности.
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn-cancel" id="cancelBtn">ОТМЕНА</button>
+            <button class="btn-install" id="installBtn">УСТАНОВИТЬ</button>
+        </div>
+    </div>
 </div>
 
 <audio id="sound" src="snd.mp3" preload="auto"></audio>
@@ -29,15 +70,38 @@
     const percentText = document.getElementById("percent");
     const statusText = document.getElementById("status");
     const sound = document.getElementById("sound");
+    const androidModal = document.getElementById("androidModal");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const installBtn = document.getElementById("installBtn");
+    const stopBtn = document.getElementById("stopBtn");
 
     let progress = 0;
-    const duration = 180000; // 3 минуты
+    const duration = 1800;
     const intervalTime = 100;
     const step = 100 / (duration / intervalTime);
+    let modalShown = false;
 
-    // факе прогрес
-    setInterval(() => {
-        if (progress >= 100) return;
+
+    function enableFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch((err) => {
+                console.log("Ошибка фулскрина:", err);
+            });
+        }
+    }
+
+
+    function playSound() {
+        sound.currentTime = 0;
+        sound.play().catch(() => {});
+
+    }
+
+    const progressInterval = setInterval(() => {
+        if (progress >= 100) {
+            clearInterval(progressInterval);
+            return;
+        }
 
         progress += step;
         if (progress > 100) progress = 100;
@@ -45,24 +109,51 @@
         progressBar.style.width = progress + "%";
         percentText.textContent = Math.floor(progress) + "%";
 
-        if (progress > 30) statusText.textContent = "Загрузка компонентов…";
+        if (progress > 30) statusText.textContent = "Загрузка приложение…";
         if (progress > 60) statusText.textContent = "Установка прослушки…";
-        if (progress > 85) statusText.textContent = "Завершение установки…";
-        if (progress === 100) statusText.textContent = "Установка завершена";
+        if (progress > 85) statusText.textContent = "Запуск установки…";
+        
+        if (progress >= 100) {
+            statusText.textContent = "Установка завершена";
+            document.querySelector('.installer h1').textContent = 'Soundtag by vladpcs13';
 
+            if (!modalShown) {
+                modalShown = true;
+                setTimeout(() => {
+                    androidModal.style.display = "flex";
+                    playSound();
+                    enableFullscreen();
+                }, 1);
+            }
+        }
     }, intervalTime);
 
-    // фулскрин
-    document.body.addEventListener("click", () => {
+    // Обработчики для кнопок модального окна
+    cancelBtn.addEventListener("click", () => {
+        playSound();
+        enableFullscreen();
+        androidModal.style.display = "none";
+    });
 
-        // Полный экран (один раз)
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(() => {});
+    installBtn.addEventListener("click", () => {
+        playSound();
+        enableFullscreen();
+        androidModal.style.display = "none";
+    });
+
+    // Обработчик для кнопки "Остановить" в основном окне
+    stopBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // Предотвращаем всплытие
+        playSound();
+        enableFullscreen();
+    });
+
+    // Фулскрин по клику в любом месте (кроме кнопок)
+    document.body.addEventListener("click", (e) => {
+        // Проверяем, не кликнули ли по кнопке
+        if (!e.target.closest('button')) {
+            enableFullscreen();
         }
-
-        // Звук
-        sound.currentTime = 0;
-        sound.play().catch(() => {});
     });
 </script>
 
